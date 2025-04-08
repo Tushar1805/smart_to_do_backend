@@ -6,7 +6,7 @@ const dotenv = require("dotenv").config();
 connectDb();
 const app = express();
 
-const port = process.env.port || 5000;
+const port = process.env.port || 8080;
 
 app.use(express.json());
 app.use("/api/conversations", require("./routes/conversation_routes"));
