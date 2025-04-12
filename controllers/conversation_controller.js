@@ -18,16 +18,28 @@ const getConversation = asyncHandler(async (req, res) => {
 const createConversation = asyncHandler(async (req, res) => {
   console.log("The request body is ", req.body);
   const { title, messages } = req.body;
+  const existing = await Conversations.findOne({
+    title: title,
+  });
   if (!messages) {
     res.status(400);
     throw new Error("All fields are mandatory");
   }
-  const conversation = await Conversations.create({
-    title,
-    messages,
-    // user_id: req.user.id,
-  });
-  res.status(201).json(conversation);
+  if (existing) {
+    const conversation = await Conversations.findOneAndUpdate(
+      { title: title },
+      { title: title, messages: messages },
+      { upsert: true }
+    );
+    res.status(201).json(conversation);
+  } else {
+    const conversation = await Conversations.create({
+      title,
+      messages,
+      // user_id: req.user.id,
+    });
+    res.status(201).json(conversation);
+  }
 });
 
 module.exports = {
